@@ -1,0 +1,66 @@
+import csv
+import json
+import json2html
+import functools
+from json2html import *
+
+
+from json import JSONDecoder
+from functools import partial
+
+#https://stackoverflow.com/questions/21708192/how-do-i-use-the-json-module-to-read-in-one-json-object-at-a-time/21709058
+
+def json_parse(fileobj, decoder=json.JSONDecoder(), buffersize=2048,
+               delimiters=None):
+    remainder = ''
+    for chunk in iter(functools.partial(fileobj.read, buffersize), ''):
+        remainder += chunk
+        while remainder:
+            try:
+                stripped = remainder.strip(delimiters)
+                result, index = decoder.raw_decode(stripped)
+                yield result
+                remainder = stripped[index:]
+            except ValueError:
+                # Not enough data to decode, read more
+                break
+outfile = open("/home/occamware/tec_work/vioperfnew.csv", "w")
+writer = csv.writer(outfile)
+# with open('/home/occamware/tec_work/vioperfnew.json', 'r') as infh:
+#      for data in json_parse(infh):
+#          print data
+
+
+htmlcontent = list(json_parse(open('/home/occamware/tec_work/vioperfnew.json')))
+
+
+f = open('/home/occamware/tec_work/vioperfauxdb1.html','w')
+f.write(json2html.convert(json = htmlcontent))
+
+
+htmlcontent2 = list(json_parse(open('/home/occamware/tec_work/vioperfauxdb2.json')))
+
+
+f = open('/home/occamware/tec_work/vioperfauxdb2.html','w')
+f.write(json2html.convert(json = htmlcontent2))
+
+htmlcontent3 = list(json_parse(open('/home/occamware/tec_work/vioperfauxdb3.json')))
+
+
+f = open('/home/occamware/tec_work/vioperfauxdb3.html','w')
+f.write(json2html.convert(json = htmlcontent3))
+
+            # outfile = open("/home/occamware/tec_work/vioperfnew.csv", "w")
+#
+#with open('/home/occamware/tec_work/vioperf.json', 'r') as json_data:
+     #data = json.loads(json_data)
+     #print data
+#
+# writer = csv.writer(outfile)
+
+# for row in json.loads(infile.read()):
+#    writer.writerow(row)
+
+# infoFromJson = json.loads(infile.read())
+#
+# print json2html.convert(json = infoFromJson)
